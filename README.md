@@ -114,6 +114,56 @@ Excel.
   <img src="capturas/nian-admin/05-usuarios-grupos.png" width="380" alt="Usuarios y permisos">
 </p>
 
+## Asistente IA — Experimento (ERP + IA)
+
+Experimento propio: consola de gestión con asistente de IA integrado. Servidor
+modular en Go con aislamiento por empresa (Row Level Security de PostgreSQL),
+cliente Flutter (escritorio/web/móvil) y un orquestador que consulta y registra
+datos con tarjetas de confirmación antes de escribir.
+
+**Stack:** Go (pgx, RLS, JWT, River) · Flutter (GetX) · Postgres · IA con
+herramientas por módulo.
+
+<p>
+  <img src="capturas/asistente-ia/02-tablero.png" width="620" alt="Tablero con KPIs y alertas">
+</p>
+
+<p>
+  <img src="capturas/asistente-ia/01-login.png" width="380" alt="Inicio de sesión">
+  <img src="capturas/asistente-ia/03-punto-de-venta.png" width="380" alt="Punto de venta con carrito">
+</p>
+
+<p>
+  <img src="capturas/asistente-ia/04-asistente-ventas.png" width="380" alt="Asistente: ventas del día">
+  <img src="capturas/asistente-ia/05-asistente-inventario.png" width="380" alt="Asistente: inventario crítico">
+</p>
+
+<p>
+  <img src="capturas/asistente-ia/06-asistente-orden.png" width="620" alt="Asistente: orden de compra con confirmación">
+</p>
+
+## SysCafé IA — Experimento (escritorio MDI + IA)
+
+Experimento propio: reproducción moderna de un sistema de gestión de escritorio
+(ventanas MDI, catálogos y comprobantes) con cliente Flutter, servidor Go y un
+asistente que explica procesos, consulta datos y abre ventanas por sí solo.
+
+**Stack:** Flutter (escritorio) · Go · Postgres · asistente IA.
+
+<p>
+  <img src="capturas/syscafe-ia/02-escritorio.png" width="620" alt="Escritorio con tablero y pendientes">
+</p>
+
+<p>
+  <img src="capturas/syscafe-ia/01-login.png" width="380" alt="Inicio de sesión">
+  <img src="capturas/syscafe-ia/03-factura.png" width="380" alt="Factura de venta (MDI)">
+</p>
+
+<p>
+  <img src="capturas/syscafe-ia/04-asistente.png" width="380" alt="Asistente: consulta de clientes">
+  <img src="capturas/syscafe-ia/05-terceros.png" width="380" alt="Asistente: ventana de terceros abierta">
+</p>
+
 ## Notas
 
 - Las capturas incluyen datos de prueba de las aplicaciones.
