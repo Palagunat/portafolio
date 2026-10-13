@@ -9,10 +9,10 @@ import type { Lang } from './site';
 
 const es = {
   meta: {
-    title: 'Paulo Laguna — Desarrollador Full-Stack | Go · Flutter',
+    title: 'Andrés Laguna — Desarrollador Full-Stack | Go · Flutter',
     description:
       'Desarrollador full-stack con más de 10 años llevando productos a producción: backend en Go, apps en Flutter e infraestructura. Disponible para trabajo remoto.',
-    ogAlt: 'Paulo Laguna — Desarrollador Full-Stack',
+    ogAlt: 'Andrés Laguna — Desarrollador Full-Stack',
   },
 
   nav: {
@@ -202,10 +202,10 @@ export type Dict = typeof es;
 
 const en: Dict = {
   meta: {
-    title: 'Paulo Laguna — Full-Stack Engineer | Go · Flutter',
+    title: 'Andrés Laguna — Full-Stack Engineer | Go · Flutter',
     description:
       'Full-stack engineer with 10+ years shipping products to production: Go backends, Flutter apps and infrastructure. Available for remote work.',
-    ogAlt: 'Paulo Laguna — Full-Stack Engineer',
+    ogAlt: 'Andrés Laguna — Full-Stack Engineer',
   },
 
   nav: {

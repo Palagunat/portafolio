@@ -1,4 +1,4 @@
-# Portafolio — Paulo Andrés Laguna Tovar
+# Portafolio — Andrés Laguna
 
 Sitio de portafolio para búsqueda de empleo. Construido con **Astro**, en
 español e inglés, y publicado como sitio estático.

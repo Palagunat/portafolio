@@ -9,8 +9,8 @@ export const LANGUAGES: Lang[] = ['es', 'en'];
 
 export const site = {
   name: 'Paulo Andrés Laguna Tovar',
-  shortName: 'Paulo Laguna',
-  initials: 'PL',
+  shortName: 'Andrés Laguna',
+  initials: 'AL',
 
   role: 'Desarrollador Full-Stack',
 
@@ -34,7 +34,7 @@ export const site = {
   clientSite: 'https://llantaseltoro.cl',
 
   cv: {
-    es: 'cv/paulo-laguna-cv-es.pdf',
-    en: 'cv/paulo-laguna-cv-en.pdf',
+    es: 'cv/andres-laguna-cv-es.pdf',
+    en: 'cv/andres-laguna-cv-en.pdf',
   },
 } as const;
