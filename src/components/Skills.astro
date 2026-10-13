@@ -1,0 +1,116 @@
+---
+import Icon from './Icon.astro';
+import { type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<section class="section" id="habilidades" data-section="habilidades">
+  <div class="container">
+    <header class="section-head" data-reveal>
+      <p class="eyebrow">
+        <span class="eyebrow__dot"></span>
+        <span class="eyebrow__num">05</span>
+        {t.skills.eyebrow}
+      </p>
+      <h2 class="section-head__title">{t.skills.title}</h2>
+      <p class="section-head__text">{t.skills.lead}</p>
+    </header>
+
+    <div class="skills">
+      {
+        t.skills.groups.map((group, index) => (
+          <div class="skills__group" style={`--i:${index}`} data-reveal>
+            <h3 class="skills__title">{group.title}</h3>
+            <ul class="skills__list">
+              {group.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="skills__other" data-reveal>
+      <p class="skills__other-title">
+        <Icon name="sparkle" size={14} />
+        {t.skills.otherTitle}
+      </p>
+      <p class="skills__other-text">{t.skills.other}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 2.25rem);
+  }
+
+  .skills__group {
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .skills__title {
+    margin-bottom: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .skills__list {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .skills__list li {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--fg-muted);
+    transition: color 0.3s var(--ease);
+  }
+
+  .skills__list li:hover {
+    color: var(--fg);
+  }
+
+  .skills__other {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+    padding: 1.5rem 1.7rem;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--gold-line);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: linear-gradient(90deg, var(--gold-wash), transparent 55%);
+  }
+
+  .skills__other-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .skills__other-text {
+    max-width: 52rem;
+    font-size: 0.9rem;
+    line-height: 1.68;
+    color: var(--fg-muted);
+  }
+</style>

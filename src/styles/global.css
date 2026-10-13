@@ -1,0 +1,566 @@
+/* ==========================================================================
+   Paulo Laguna — Portafolio
+   Sistema de diseño: oscuro, sobrio, con acento dorado.
+   ========================================================================== */
+
+:root {
+  /* --- Superficies ------------------------------------------------------ */
+  --bg: #08080a;
+  --bg-soft: #0c0c10;
+  --surface: #111114;
+  --surface-2: #16161a;
+  --surface-3: #1c1c21;
+
+  /* --- Líneas ----------------------------------------------------------- */
+  --line: rgba(255, 255, 255, 0.07);
+  --line-soft: rgba(255, 255, 255, 0.045);
+  --line-strong: rgba(255, 255, 255, 0.13);
+
+  /* --- Texto ------------------------------------------------------------ */
+  --fg: #ededef;
+  /* Los tres pasan AA (4.5:1) sobre --bg y --surface. */
+  --fg-muted: #a9a9b1;
+  --fg-dim: #8c8c95;
+  --fg-faint: #7b7b84;
+
+  /* --- Dorado ----------------------------------------------------------- */
+  --gold: #c9a961;
+  --gold-bright: #ebd5a0;
+  --gold-deep: #8a6e33;
+  --gold-line: rgba(201, 169, 97, 0.24);
+  --gold-glow: rgba(201, 169, 97, 0.13);
+  --gold-wash: rgba(201, 169, 97, 0.05);
+  --gradient-gold: linear-gradient(135deg, #f0dcae 0%, #cfa960 42%, #9a7a3a 100%);
+  --gradient-gold-soft: linear-gradient(
+    135deg,
+    rgba(240, 220, 174, 0.9) 0%,
+    rgba(207, 169, 96, 0.9) 50%,
+    rgba(154, 122, 58, 0.9) 100%
+  );
+
+  /* --- Tipografía ------------------------------------------------------- */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', Georgia, serif;
+  --font-sans:
+    'Inter Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fs-display: clamp(2.25rem, 5vw, 4rem);
+  --fs-h2: clamp(1.65rem, 3.2vw, 2.4rem);
+  --fs-h3: clamp(1.1rem, 1.9vw, 1.45rem);
+  --fs-lead: clamp(1.05rem, 1.5vw, 1.22rem);
+  --fs-body: 1rem;
+  --fs-sm: 0.875rem;
+  --fs-xs: 0.78rem;
+
+  --tracking-eyebrow: 0.16em;
+
+  /* --- Espaciado -------------------------------------------------------- */
+  --container: 1200px;
+  --gutter: clamp(1.25rem, 5vw, 2.5rem);
+  --section-y: clamp(4rem, 9vw, 7.5rem);
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-lg: 20px;
+
+  /* --- Movimiento ------------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}
+
+/* ==========================================================================
+   Reset
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: rgba(201, 169, 97, 0.18);
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.65;
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+::selection {
+  background: rgba(201, 169, 97, 0.28);
+  color: #fff;
+}
+
+/* ==========================================================================
+   Tipografía
+   ========================================================================== */
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-variation-settings: 'opsz' 48;
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--fs-display);
+}
+h2 {
+  font-size: var(--fs-h2);
+}
+h3 {
+  font-size: var(--fs-h3);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+strong {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+/* ==========================================================================
+   Estructura
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: max(var(--gutter), env(safe-area-inset-left))
+    max(var(--gutter), env(safe-area-inset-right));
+}
+
+.section {
+  position: relative;
+  padding-block: var(--section-y);
+}
+
+.section--tight {
+  padding-block: clamp(3rem, 7vw, 5rem);
+}
+
+/* Separador de sección: línea neutra, del ancho del contenido. */
+.rule {
+  width: min(100% - 2 * var(--gutter), var(--container) - 2 * var(--gutter));
+  height: 1px;
+  margin-inline: auto;
+  border: 0;
+  background: var(--line);
+}
+
+/* ==========================================================================
+   Encabezado de sección
+   ========================================================================== */
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.eyebrow__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex: none;
+}
+
+.eyebrow__num {
+  color: var(--fg-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-head {
+  display: grid;
+  gap: clamp(0.9rem, 2vw, 1.4rem);
+  max-width: 46rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+
+.section-head__title {
+  margin: 0;
+}
+
+.section-head__text {
+  color: var(--fg-muted);
+  font-size: var(--fs-lead);
+  max-width: 42rem;
+}
+
+/* ==========================================================================
+   Botones y enlaces
+   ========================================================================== */
+
+.btn {
+  --btn-bg: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.35rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--btn-bg);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    border-color 0.35s var(--ease),
+    background-color 0.35s var(--ease),
+    color 0.35s var(--ease),
+    transform 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: var(--gold);
+  color: #17130a;
+  font-weight: 600;
+}
+
+.btn--primary:hover {
+  background: var(--gold-bright);
+}
+
+.btn--ghost:hover {
+  border-color: var(--gold-line);
+  background: var(--gold-wash);
+  color: var(--gold-bright);
+}
+
+.btn--lg {
+  padding: 0.95rem 1.7rem;
+  font-size: 0.95rem;
+}
+
+.btn__icon {
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+/* Enlace con subrayado dorado que crece desde la izquierda. */
+.link {
+  position: relative;
+  color: var(--fg);
+  transition: color 0.3s var(--ease);
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--ease-out);
+}
+
+.link:hover {
+  color: var(--gold-bright);
+}
+
+.link:hover::after {
+  transform: scaleX(1);
+}
+
+/* ==========================================================================
+   Etiquetas de tecnología
+   ========================================================================== */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag {
+  padding: 0.24rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.02);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--fg-muted);
+  white-space: nowrap;
+}
+
+.tag--gold {
+  border-color: var(--gold-line);
+  color: var(--gold);
+  background: var(--gold-wash);
+}
+
+/* ==========================================================================
+   Tarjetas
+   ========================================================================== */
+
+.card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition:
+    border-color 0.4s var(--ease),
+    background-color 0.4s var(--ease),
+    transform 0.5s var(--ease-out);
+}
+
+.card:hover {
+  border-color: var(--gold-line);
+  background: var(--surface-2);
+}
+
+/* ==========================================================================
+   Animación de entrada al hacer scroll
+   ========================================================================== */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.85s var(--ease-out),
+    transform 0.85s var(--ease-out);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ==========================================================================
+   Accesibilidad
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--gold);
+  color: #17130a;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transform: translateY(-200%);
+  transition: transform 0.3s var(--ease);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ==========================================================================
+   Fondo: un único brillo dorado, muy tenue, en la parte alta de la página
+   ========================================================================== */
+
+.page-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 36% at 50% -8%, rgba(201, 169, 97, 0.06), transparent 72%),
+    var(--bg);
+}
+
+/* ==========================================================================
+   Utilidades
+   ========================================================================== */
+
+.grid-2 {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 3.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.stack {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.muted {
+  color: var(--fg-muted);
+}
+
+.dim {
+  color: var(--fg-dim);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.02em;
+}
+
+/* ==========================================================================
+   Movimiento reducido
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   Impresión
+   ========================================================================== */
+
+@media print {
+  :root {
+    --bg: #fff;
+    --fg: #111;
+    --fg-muted: #444;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  .page-glow,
+  .site-nav,
+  .site-footer,
+  .no-print {
+    display: none !important;
+  }
+
+  .card {
+    border-color: #ddd;
+    background: #fff;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* Con el visor de imágenes abierto la página de fondo no se desplaza. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}

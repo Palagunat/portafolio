@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ui } from '../data/i18n';
+import { withBase, localePath } from '../utils/url';
+
+const t = ui.es;
+const home = localePath('es', '');
+
+const links = [
+  { href: home, label: 'Ir al inicio' },
+  { href: `${home}#proyectos`, label: 'Ver los proyectos' },
+  { href: `${home}#contacto`, label: 'Contacto' },
+  { href: withBase('en/'), label: 'View this site in English' },
+];
+
+// El conmutador de idioma no puede deducir la ruta: no existe un 404 en inglés.
+const englishHome = withBase('en/');
+---
+
+<BaseLayout
+  lang="es"
+  title={`404 — ${t.meta.title}`}
+  description={t.meta.description}
+  alternateUrl={englishHome}
+  noindex
+>
+  <section class="notfound">
+    <div class="container">
+      <p class="eyebrow">
+        <span class="eyebrow__dot"></span>
+        Error 404
+      </p>
+
+      <h1 class="notfound__title">Esta página no existe.</h1>
+      <p class="notfound__text">
+        Puede que el enlace esté roto o que la página se haya movido. Desde aquí
+        puedes volver a lo importante.
+      </p>
+
+      <ul class="notfound__links">
+        {
+          links.map((link, index) => (
+            <li>
+              <a href={link.href}>
+                <span class="notfound__num">{String(index + 1).padStart(2, '0')}</span>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .notfound {
+    display: grid;
+    place-items: center;
+    min-height: 78vh;
+    padding-block: clamp(6rem, 14vw, 10rem) clamp(4rem, 10vw, 7rem);
+  }
+
+  .notfound h1,
+  .notfound p,
+  .notfound ul {
+    max-width: 44rem;
+  }
+
+  .notfound__title {
+    margin-block: 1.1rem 1rem;
+    font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+  }
+
+  .notfound__text {
+    font-size: var(--fs-lead);
+    line-height: 1.72;
+    color: var(--fg-muted);
+  }
+
+  .notfound__links {
+    display: grid;
+    gap: 0.15rem;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .notfound__links a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-block: 0.9rem;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 1rem;
+    color: var(--fg-muted);
+    transition: color 0.3s var(--ease);
+  }
+
+  .notfound__links a:hover {
+    color: var(--gold-bright);
+  }
+
+  .notfound__num {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--gold);
+  }
+</style>

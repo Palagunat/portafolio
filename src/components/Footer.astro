@@ -1,0 +1,186 @@
+---
+import Icon from './Icon.astro';
+import { site, type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+import { withBase } from '../utils/url';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+const year = new Date().getFullYear();
+
+const links = [
+  { href: site.github, label: site.githubHandle, icon: 'github' as const },
+  { href: `mailto:${site.email}`, label: site.email, icon: 'mail' as const },
+];
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__top">
+      <div class="site-footer__brand">
+        <span class="site-footer__mark" aria-hidden="true">{site.initials}</span>
+        <div>
+          <p class="site-footer__name">{site.name}</p>
+          <p class="site-footer__role">{t.hero.role} · {t.hero.stack}</p>
+        </div>
+      </div>
+
+      <ul class="site-footer__links">
+        {
+          links.map((link) => (
+            <li>
+              <a class="site-footer__link" href={link.href} rel="noopener">
+                <Icon name={link.icon} size={15} />
+                <span>{link.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="site-footer__actions">
+        <a class="btn btn--ghost" href={withBase(site.cv[lang])}>
+          <Icon name="download" size={15} />
+          {t.contact.cv}
+        </a>
+        <a class="site-footer__top-link" href="#main">
+          <Icon name="arrow-up" size={14} />
+          {t.footer.top}
+        </a>
+      </div>
+    </div>
+
+    <hr class="rule" />
+
+    <div class="site-footer__bottom">
+      <p class="site-footer__legal">{t.footer.legal}</p>
+      <p class="site-footer__meta">
+        © {year} {t.footer.rights} · {t.footer.builtWith}
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    position: relative;
+    padding-block: clamp(3rem, 6vw, 4.5rem) 2.5rem;
+    border-top: 1px solid var(--line-soft);
+    background: linear-gradient(180deg, transparent, rgba(201, 169, 97, 0.022));
+  }
+
+  .site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem 1.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .site-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .site-footer__mark {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    flex: none;
+    border: 1px solid var(--gold-line);
+    border-radius: 10px;
+    background: var(--gold-wash);
+    color: var(--gold);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-variation-settings: 'opsz' 24;
+  }
+
+  .site-footer__name {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-variation-settings: 'opsz' 32;
+    line-height: 1.3;
+  }
+
+  .site-footer__role {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .site-footer__links {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .site-footer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: 0.88rem;
+    color: var(--fg-muted);
+    transition: color 0.3s var(--ease);
+  }
+
+  .site-footer__link:hover {
+    color: var(--gold-bright);
+  }
+
+  .site-footer__actions {
+    display: grid;
+    justify-items: start;
+    gap: 0.9rem;
+  }
+
+  .site-footer__top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    transition: color 0.3s var(--ease);
+  }
+
+  .site-footer__top-link:hover {
+    color: var(--gold);
+  }
+
+  .site-footer .rule {
+    width: 100%;
+  }
+
+  .site-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    padding-top: 1.75rem;
+  }
+
+  .site-footer__legal,
+  .site-footer__meta {
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--fg-faint);
+    max-width: 46rem;
+  }
+
+  @media (max-width: 720px) {
+    .site-footer__bottom {
+      flex-direction: column;
+    }
+  }
+</style>

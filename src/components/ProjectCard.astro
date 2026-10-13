@@ -1,0 +1,311 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import Icon from './Icon.astro';
+import type { Project, Shot } from '../data/projects';
+import { type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+import { localePath } from '../utils/url';
+
+interface Props {
+  project: Project;
+  shots: Shot[];
+  lang: Lang;
+  index?: number;
+  /** Portada distinta de la primera captura. */
+  coverIndex?: number;
+}
+
+const { project, shots, lang, index = 0, coverIndex = project.cardCover ?? 0 } = Astro.props;
+const t = ui[lang];
+
+const cover = shots[coverIndex] ?? shots[0];
+const href = localePath(lang, `proyectos/${project.slug}`);
+
+const isPortrait = (image: ImageMetadata) => image.height > image.width;
+
+/** Las apps móviles dan capturas verticales: mostramos dos en paralelo. */
+const portraitPair = shots.filter((item) => isPortrait(item.src)).slice(0, 2);
+const showPair = Boolean(cover && isPortrait(cover.src) && portraitPair.length === 2);
+
+const categoryLabel: Record<Project['category'], string> = {
+  production: t.projects.filters.production,
+  own: t.projects.filters.own,
+  freelance: t.projects.filters.freelance,
+  lab: t.projects.filters.lab,
+};
+
+const demo = project.links?.find((link) => link.kind === 'demo');
+const site_ = project.links?.find((link) => link.kind === 'site');
+---
+
+<article
+  class:list={['card', 'project-card', { 'project-card--wide': project.featured }]}
+  style={`--i:${index}`}
+  data-reveal
+>
+  {/* Decorativa: el enlace del título cubre toda la tarjeta, así que esta
+      zona no necesita ser un segundo enlace (vacío para lectores de pantalla). */}
+  <div class="project-card__media" aria-hidden="true">
+    {
+      showPair ? (
+        <span class="project-card__pair">
+          {portraitPair.map((item) => (
+            <Image
+              src={item.src}
+              alt=""
+              widths={[240, 420]}
+              sizes="(max-width: 720px) 30vw, 160px"
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
+        </span>
+      ) : (
+        cover && (
+          <Image
+            src={cover.src}
+            alt=""
+            widths={[420, 700, 1000]}
+            sizes={
+              project.featured
+                ? '(max-width: 720px) 92vw, (max-width: 1200px) 60vw, 700px'
+                : '(max-width: 720px) 92vw, (max-width: 1200px) 45vw, 420px'
+            }
+            loading="lazy"
+            decoding="async"
+          />
+        )
+      )
+    }
+  </div>
+
+  <div class="project-card__body">
+    <div class="project-card__meta">
+      <span class="tag tag--gold">{categoryLabel[project.category]}</span>
+      <span class="project-card__period">{project.period[lang]}</span>
+    </div>
+
+    <h3 class="project-card__title">
+      <a href={href}>{project.title}</a>
+    </h3>
+
+    <p class="project-card__summary">{project.summary[lang]}</p>
+
+    <ul class="tags project-card__tags">
+      {project.stack.slice(0, 5).map((item) => <li class="tag">{item}</li>)}
+      {project.stack.length > 5 && <li class="tag">+{project.stack.length - 5}</li>}
+    </ul>
+
+    <div class="project-card__foot">
+      <a class="project-card__link" href={href}>
+        {t.projects.viewProject}
+        <Icon name="arrow-right" size={15} />
+      </a>
+
+      {
+        demo && (
+          <a
+            class="project-card__demo"
+            href={demo.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="external" size={14} />
+            {t.projects.viewDemo}
+          </a>
+        )
+      }
+
+      {
+        site_ && (
+          <a
+            class="project-card__demo"
+            href={site_.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="external" size={14} />
+            {t.projects.viewSite}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .project-card--wide {
+    grid-column: span 2;
+  }
+
+  /* --- Imagen --- */
+  .project-card__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    padding: clamp(0.9rem, 2vw, 1.25rem) clamp(0.9rem, 2vw, 1.25rem) 0;
+    background: var(--bg-soft);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  /* La captura llena el ancho y se recorta por abajo, como una ventana
+     que asoma: se lee mejor que una miniatura flotando en el centro. */
+  .project-card__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+    border: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    transition: transform 0.7s var(--ease-out);
+    transform-origin: top left;
+  }
+
+  /* Dos capturas verticales en paralelo, alineadas por su borde inferior. */
+  .project-card__pair {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: clamp(0.6rem, 2vw, 1.1rem);
+    width: 100%;
+    height: 100%;
+  }
+
+  .project-card__pair :global(img) {
+    width: auto;
+    max-width: 42%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    border: 0;
+    border-radius: 6px 6px 0 0;
+    transition: transform 0.7s var(--ease-out);
+  }
+
+  .project-card:hover .project-card__media :global(img) {
+    transform: scale(1.018);
+  }
+
+  /* --- Texto --- */
+  .project-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: clamp(1.15rem, 2.4vw, 1.6rem);
+  }
+
+  .project-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .project-card__period {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-dim);
+  }
+
+  .project-card__title {
+    font-size: clamp(1.25rem, 2.1vw, 1.45rem);
+  }
+
+  .project-card__title a {
+    transition: color 0.3s var(--ease);
+  }
+
+  .project-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .project-card:hover .project-card__title a {
+    color: var(--gold-bright);
+  }
+
+  .project-card__summary {
+    font-size: 0.92rem;
+    line-height: 1.68;
+    color: var(--fg-muted);
+  }
+
+  .project-card__tags {
+    margin-top: auto;
+  }
+
+  .project-card__foot {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .project-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--fg);
+    transition: color 0.3s var(--ease);
+  }
+
+  .project-card__link :global(.icon) {
+    transition: transform 0.45s var(--ease-out);
+  }
+
+  .project-card:hover .project-card__link {
+    color: var(--gold-bright);
+  }
+
+  .project-card:hover .project-card__link :global(.icon) {
+    transform: translateX(3px);
+  }
+
+  .project-card__demo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid var(--gold-line);
+    border-radius: 999px;
+    background: var(--gold-wash);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--gold);
+    transition:
+      background-color 0.3s var(--ease),
+      color 0.3s var(--ease);
+  }
+
+  .project-card__demo:hover {
+    background: rgba(201, 169, 97, 0.14);
+    color: var(--gold-bright);
+  }
+
+  @media (max-width: 860px) {
+    .project-card--wide {
+      grid-column: span 1;
+    }
+  }
+</style>

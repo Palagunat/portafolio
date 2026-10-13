@@ -1,0 +1,27 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectDetail from '../../components/ProjectDetail.astro';
+import { projects, type Project } from '../../data/projects';
+import { ui } from '../../data/i18n';
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+};
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const t = ui.es;
+
+const title = `${project.title} — ${t.meta.title.split('—')[0].trim()}`;
+---
+
+<BaseLayout lang="es" path={`proyectos/${project.slug}`} title={title} description={project.summary.es} ogType="article">
+  <ProjectDetail project={project} lang="es" />
+</BaseLayout>

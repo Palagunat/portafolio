@@ -1,0 +1,444 @@
+---
+import { Image, getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { Shot } from '../data/projects';
+import type { Lang } from '../data/site';
+import { ui } from '../data/i18n';
+
+interface Props {
+  shots: Shot[];
+  lang: Lang;
+  /** Oculta las capturas que ya se muestran como portada. */
+  skip?: number;
+}
+
+const { shots, lang, skip = 0 } = Astro.props;
+const t = ui[lang];
+
+const visible = shots.slice(skip);
+
+/** Agrupa las capturas manteniendo el orden de aparición de cada grupo. */
+const grouped: { key: string; label: string | null; items: (Shot & { full: string })[] }[] = [];
+
+for (const shot of visible) {
+  const full = await getImage({
+    src: shot.src,
+    width: Math.min(1800, shot.src.width),
+    format: 'webp',
+    quality: 90,
+  });
+
+  const label = shot.group ? shot.group[lang] : null;
+  const key = label ?? '__all__';
+
+  let bucket = grouped.find((group) => group.key === key);
+  if (!bucket) {
+    bucket = { key, label, items: [] };
+    grouped.push(bucket);
+  }
+
+  bucket.items.push({ ...shot, full: full.src });
+}
+---
+
+<div class="gallery">
+  {
+    grouped.map((group) => (
+      <section class="gallery__group">
+        {group.label && (
+          <h3 class="gallery__label">
+            <span class="gallery__label-dot" aria-hidden="true" />
+            {group.label}
+          </h3>
+        )}
+
+        <ul
+          class:list={[
+            'gallery__grid',
+            { 'gallery__grid--portrait': group.items.every((item) => item.src.height > item.src.width) },
+          ]}
+        >
+          {group.items.map((item) => (
+            <li class="gallery__item">
+              <button
+                class="gallery__button"
+                type="button"
+                data-lightbox
+                data-full={item.full}
+                data-caption={item.caption?.[lang] ?? item.alt[lang]}
+              >
+                <Image
+                  src={item.src}
+                  alt={item.alt[lang]}
+                  widths={[380, 700, 1100]}
+                  sizes={
+                    item.src.height > item.src.width
+                      ? '(max-width: 640px) 44vw, 200px'
+                      : '(max-width: 640px) 92vw, (max-width: 1100px) 46vw, 30vw'
+                  }
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="gallery__zoom" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="m20 20-3.5-3.5M11 8v6M8 11h6" />
+                  </svg>
+                </span>
+                <span class="sr-only">{t.projects.openImage}</span>
+              </button>
+
+              {item.caption && <p class="gallery__caption">{item.caption[lang]}</p>}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<dialog class="lightbox" id="lightbox" aria-label={t.projects.gallery}>
+  <div class="lightbox__stage">
+    <button class="lightbox__nav" type="button" data-lightbox-prev aria-label={t.a11y.previous}>
+      <Icon name="arrow-left" size={20} />
+    </button>
+
+    <figure class="lightbox__figure">
+      <img class="lightbox__img" alt="" data-lightbox-img />
+      <figcaption class="lightbox__caption">
+        <span data-lightbox-caption></span>
+        <span class="lightbox__count" data-lightbox-count aria-hidden="true"></span>
+      </figcaption>
+    </figure>
+
+    <button class="lightbox__nav" type="button" data-lightbox-next aria-label={t.a11y.next}>
+      <Icon name="arrow-right" size={20} />
+    </button>
+  </div>
+
+  <button class="lightbox__close" type="button" data-lightbox-close aria-label={t.a11y.close}>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  </button>
+</dialog>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .gallery__label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .gallery__label-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* Masonry con columnas: respeta las proporciones de móvil y escritorio. */
+  .gallery__grid {
+    columns: 1;
+    column-gap: clamp(0.75rem, 1.8vw, 1.25rem);
+  }
+
+  @media (min-width: 640px) {
+    .gallery__grid {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .gallery__grid {
+      columns: 3;
+    }
+  }
+
+  /* Capturas de teléfono: rejilla de columnas estrechas, todas a la misma altura. */
+  .gallery__grid--portrait {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+    gap: clamp(0.75rem, 1.8vw, 1.25rem);
+    max-width: 62rem;
+  }
+
+  .gallery__grid--portrait .gallery__item {
+    margin-bottom: 0;
+  }
+
+  .gallery__item {
+    break-inside: avoid;
+    margin-bottom: clamp(0.75rem, 1.8vw, 1.25rem);
+  }
+
+  .gallery__button {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+    cursor: zoom-in;
+    overflow: hidden;
+    transition:
+      border-color 0.4s var(--ease),
+      transform 0.5s var(--ease-out);
+  }
+
+  .gallery__button:hover {
+    border-color: var(--gold-line);
+    transform: translateY(-2px);
+  }
+
+  .gallery__button :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .gallery__zoom {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 50%;
+    background: rgba(8, 8, 10, 0.78);
+    backdrop-filter: blur(6px);
+    color: var(--gold-bright);
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+      opacity 0.35s var(--ease),
+      transform 0.35s var(--ease-out);
+  }
+
+  .gallery__zoom svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .gallery__button:hover .gallery__zoom,
+  .gallery__button:focus-visible .gallery__zoom {
+    opacity: 1;
+    transform: none;
+  }
+
+  .gallery__caption {
+    margin-top: 0.6rem;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--fg-dim);
+  }
+
+  /* --- Visor ---
+     El diálogo ocupa toda la ventana y centra la imagen. El reset global
+     (`* { margin: 0 }`) anula el `margin: auto` con el que el navegador
+     centra un <dialog>, así que el centrado se hace aquí de forma explícita. */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+
+  .lightbox::backdrop {
+    background: rgba(4, 4, 6, 0.92);
+    backdrop-filter: blur(6px);
+  }
+
+  .lightbox__stage {
+    display: grid;
+    grid-template-columns: auto minmax(0, auto) auto;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    width: 100%;
+    height: 100%;
+    padding: 3.75rem clamp(0.75rem, 3vw, 2rem) 1.5rem;
+  }
+
+  .lightbox__figure {
+    display: grid;
+    justify-items: center;
+    gap: 0.9rem;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .lightbox__img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - 10rem);
+    object-fit: contain;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+  }
+
+  .lightbox__caption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.35rem 0.9rem;
+    max-width: 70ch;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    text-align: center;
+  }
+
+  .lightbox__count {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--fg-dim);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .lightbox__close,
+  .lightbox__nav {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition:
+      color 0.3s var(--ease),
+      border-color 0.3s var(--ease);
+  }
+
+  .lightbox__close:hover,
+  .lightbox__nav:hover {
+    color: var(--gold-bright);
+    border-color: var(--gold-line);
+  }
+
+  .lightbox__close {
+    position: absolute;
+    top: 0.75rem;
+    right: clamp(0.75rem, 3vw, 2rem);
+  }
+
+  .lightbox__close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .lightbox__nav[hidden] {
+    display: none;
+  }
+
+  /* En pantallas estrechas las flechas bajan para no quitarle ancho a la imagen. */
+  @media (max-width: 700px) {
+    .lightbox__stage {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      align-content: center;
+      row-gap: 1.25rem;
+    }
+
+    .lightbox__figure {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      align-self: center;
+    }
+
+    .lightbox__img {
+      max-height: calc(100dvh - 14rem);
+    }
+
+    .lightbox__nav {
+      grid-row: 2;
+    }
+
+    .lightbox__nav:first-child {
+      justify-self: end;
+    }
+  }
+</style>
+
+<script>
+  const lightbox = document.getElementById('lightbox') as HTMLDialogElement | null;
+  const image = document.querySelector<HTMLImageElement>('[data-lightbox-img]');
+  const caption = document.querySelector<HTMLElement>('[data-lightbox-caption]');
+  const count = document.querySelector<HTMLElement>('[data-lightbox-count]');
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-lightbox]'));
+
+  if (lightbox && image && buttons.length) {
+    let current = 0;
+
+    const show = (index: number) => {
+      current = (index + buttons.length) % buttons.length;
+      const button = buttons[current];
+      image.src = button.dataset.full ?? '';
+      image.alt = button.dataset.caption ?? '';
+      if (caption) caption.textContent = button.dataset.caption ?? '';
+      if (count) count.textContent = buttons.length > 1 ? `${current + 1} / ${buttons.length}` : '';
+    };
+
+    // Con una sola imagen las flechas no tienen sentido.
+    const navButtons = lightbox.querySelectorAll<HTMLButtonElement>('.lightbox__nav');
+    navButtons.forEach((button) => (button.hidden = buttons.length < 2));
+
+    buttons.forEach((button, index) => {
+      button.addEventListener('click', () => {
+        show(index);
+        lightbox.showModal();
+      });
+    });
+
+    document.querySelector('[data-lightbox-close]')?.addEventListener('click', () => {
+      lightbox.close();
+    });
+
+    document.querySelector('[data-lightbox-prev]')?.addEventListener('click', () => {
+      show(current - 1);
+    });
+
+    document.querySelector('[data-lightbox-next]')?.addEventListener('click', () => {
+      show(current + 1);
+    });
+
+    // Cerrar al hacer clic fuera de la imagen y de los controles.
+    lightbox.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('img, button, figcaption')) lightbox.close();
+    });
+
+    lightbox.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') show(current - 1);
+      if (event.key === 'ArrowRight') show(current + 1);
+    });
+  }
+</script>

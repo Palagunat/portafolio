@@ -1,0 +1,249 @@
+---
+import { jobs } from '../data/experience';
+import { type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<section class="section" id="experiencia" data-section="experiencia">
+  <div class="container">
+    <header class="section-head" data-reveal>
+      <p class="eyebrow">
+        <span class="eyebrow__dot"></span>
+        <span class="eyebrow__num">04</span>
+        {t.experience.eyebrow}
+      </p>
+      <h2 class="section-head__title">{t.experience.title}</h2>
+      <p class="section-head__text">{t.experience.lead}</p>
+    </header>
+
+    <ol class="timeline">
+      {
+        jobs.map((job, index) => (
+          <li
+            class:list={['timeline__item', { 'timeline__item--featured': job.featured }]}
+            style={`--i:${index}`}
+            data-reveal
+          >
+            <div class="timeline__marker" aria-hidden="true">
+              <span class="timeline__dot" />
+            </div>
+
+            <div class="timeline__content">
+              <div class="timeline__head">
+                <div class="timeline__id">
+                  <h3 class="timeline__company">{job.company}</h3>
+                  <p class="timeline__role">{job.role[lang]}</p>
+                </div>
+
+                <div class="timeline__when">
+                  {job.featured && (
+                    <span class="tag tag--gold timeline__badge">
+                      {t.experience.mainLabel}
+                    </span>
+                  )}
+                  <span class="timeline__period">{job.period[lang]}</span>
+                  <span class="timeline__place">{job.place[lang]}</span>
+                </div>
+              </div>
+
+              <p class="timeline__summary">{job.summary[lang]}</p>
+
+              <ul class="timeline__bullets">
+                {job.bullets[lang].map((bullet) => (
+                  <li>
+                    <span class="timeline__bullet-mark" aria-hidden="true" />
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <ul class="tags timeline__stack">
+                {job.stack.map((item) => (
+                  <li class="tag">{item}</li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .timeline {
+    position: relative;
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+    margin: 0;
+  }
+
+  /* Riel vertical con degradado dorado. */
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 1px;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      var(--gold-line) 6%,
+      var(--gold-line) 88%,
+      transparent
+    );
+  }
+
+  .timeline__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(1rem, 2.6vw, 1.85rem);
+    align-items: start;
+  }
+
+  .timeline__marker {
+    position: relative;
+    padding-top: 0.55rem;
+    width: 15px;
+    display: grid;
+    place-items: center;
+  }
+
+  .timeline__dot {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    transition:
+      border-color 0.4s var(--ease),
+      box-shadow 0.4s var(--ease);
+  }
+
+  .timeline__item--featured .timeline__dot {
+    border-color: var(--gold);
+    background: var(--gold);
+  }
+
+  .timeline__content {
+    display: grid;
+    gap: 0.95rem;
+    padding: clamp(1.15rem, 2.6vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: border-color 0.45s var(--ease);
+  }
+
+  .timeline__item:hover .timeline__content {
+    border-color: var(--line-strong);
+  }
+
+  .timeline__item--featured .timeline__content {
+    border-color: var(--gold-line);
+  }
+
+  /* --- Encabezado --- */
+  .timeline__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+  }
+
+  .timeline__company {
+    font-size: clamp(1.15rem, 2.1vw, 1.4rem);
+  }
+
+  .timeline__role {
+    margin-top: 0.25rem;
+    font-size: 0.9rem;
+    color: var(--gold);
+  }
+
+  .timeline__when {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem 0.7rem;
+    text-align: right;
+  }
+
+  .timeline__badge {
+    font-size: 0.62rem;
+  }
+
+  .timeline__period {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    color: var(--fg);
+    white-space: nowrap;
+  }
+
+  .timeline__place {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--fg-faint);
+    white-space: nowrap;
+  }
+
+  /* --- Cuerpo --- */
+  .timeline__summary {
+    max-width: 52rem;
+    font-size: 0.96rem;
+    line-height: 1.72;
+    color: var(--fg-muted);
+  }
+
+  .timeline__bullets {
+    display: grid;
+    gap: 0.55rem;
+    max-width: 56rem;
+  }
+
+  .timeline__bullets li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.7rem;
+    align-items: start;
+    font-size: 0.9rem;
+    line-height: 1.66;
+    color: var(--fg-muted);
+  }
+
+  .timeline__bullet-mark {
+    width: 5px;
+    height: 5px;
+    margin-top: 0.62em;
+    border-radius: 50%;
+    background: var(--gold-deep);
+  }
+
+  .timeline__stack {
+    padding-top: 0.35rem;
+  }
+
+  /* --- Adaptación --- */
+  @media (max-width: 720px) {
+    .timeline__when {
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .timeline__head {
+      flex-direction: column;
+    }
+  }
+</style>

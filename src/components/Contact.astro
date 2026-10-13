@@ -1,0 +1,244 @@
+---
+import Icon from './Icon.astro';
+import { site, type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+import { withBase } from '../utils/url';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+const actions = [
+  {
+    label: t.contact.email,
+    value: site.email,
+    href: `mailto:${site.email}`,
+    icon: 'mail' as const,
+    external: false,
+  },
+  {
+    label: t.contact.github,
+    value: `github.com/${site.githubHandle}`,
+    href: site.github,
+    icon: 'github' as const,
+    external: true,
+  },
+  {
+    label: t.contact.cv,
+    value: 'PDF',
+    href: withBase(site.cv[lang]),
+    icon: 'download' as const,
+    external: false,
+  },
+];
+---
+
+<section class="section contact" id="contacto" data-section="contacto">
+  <div class="container">
+    <div class="contact__panel" data-reveal>
+      <div class="contact__head">
+        <p class="eyebrow">
+          <span class="eyebrow__dot"></span>
+          <span class="eyebrow__num">06</span>
+          {t.contact.eyebrow}
+        </p>
+        <h2 class="contact__title">{t.contact.title}</h2>
+        <p class="contact__lead">{t.contact.lead}</p>
+      </div>
+
+      <ul class="contact__actions">
+        {
+          actions.map((action, index) => (
+            <li style={`--i:${index}`}>
+              <a
+                class:list={['contact__action', { 'contact__action--primary': index === 0 }]}
+                href={action.href}
+                target={action.external ? '_blank' : undefined}
+                rel={action.external ? 'noopener noreferrer' : undefined}
+              >
+                <span class="contact__action-icon">
+                  <Icon name={action.icon} size={16} />
+                </span>
+                <span class="contact__action-body">
+                  <span class="contact__action-label">{action.label}</span>
+                  <span class="contact__action-value">{action.value}</span>
+                </span>
+                <Icon name={action.external ? 'external' : 'arrow-right'} size={15} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="contact__note">
+        <span class="contact__pulse" aria-hidden="true"></span>
+        {t.contact.availability}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact__panel {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+    padding: clamp(1.75rem, 4.5vw, 3.25rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .contact__head {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .contact__title {
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+  }
+
+  .contact__lead {
+    max-width: 34rem;
+    font-size: var(--fs-lead);
+    line-height: 1.7;
+    color: var(--fg-muted);
+  }
+
+  /* --- Acciones --- */
+  .contact__actions {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .contact__action {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.95rem;
+    align-items: center;
+    padding: 0.85rem 1.05rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.015);
+    transition:
+      border-color 0.35s var(--ease),
+      background-color 0.35s var(--ease),
+      transform 0.4s var(--ease-out);
+  }
+
+  .contact__action:hover {
+    border-color: var(--gold-line);
+    background: var(--gold-wash);
+    transform: translateX(3px);
+  }
+
+  .contact__action :global(.icon):last-child {
+    color: var(--fg-faint);
+    transition: color 0.3s var(--ease);
+  }
+
+  .contact__action:hover :global(.icon):last-child {
+    color: var(--gold);
+  }
+
+  .contact__action-icon {
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--gold);
+  }
+
+  .contact__action--primary .contact__action-icon {
+    border-color: var(--gold-line);
+    background: var(--gold-wash);
+  }
+
+  .contact__action-body {
+    display: grid;
+    gap: 0.12rem;
+    min-width: 0;
+  }
+
+  .contact__action-label {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .contact__action-value {
+    font-size: 0.9rem;
+    color: var(--fg);
+    overflow-wrap: anywhere;
+  }
+
+  /* --- Disponibilidad --- */
+  .contact__note {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--line-soft);
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.03em;
+    color: var(--fg-dim);
+  }
+
+  .contact__pulse {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: #7dc98a;
+  }
+
+  @media (max-width: 900px) {
+    .contact__panel {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .contact__panel {
+      padding: 1.25rem;
+    }
+
+    .contact__action {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.75rem;
+      padding-inline: 0.8rem;
+    }
+
+    .contact__action > :global(.icon) {
+      display: none;
+    }
+
+    .contact__action-value {
+      font-size: 0.8rem;
+    }
+  }
+
+  /* En los teléfonos más estrechos el icono cede su ancho al correo. */
+  @media (max-width: 360px) {
+    .contact__action {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .contact__action-icon {
+      display: none;
+    }
+  }
+</style>

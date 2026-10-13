@@ -1,0 +1,515 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import Gallery from './Gallery.astro';
+import { projects, getShots, type Project } from '../data/projects';
+import { type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+import { localePath } from '../utils/url';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+}
+
+const { project, lang } = Astro.props;
+const t = ui[lang];
+
+const shots = getShots(project.slug);
+const behindTheFold = shots.slice(1);
+
+const cover = shots[0];
+const coverIsPortrait = Boolean(cover && cover.src.height > cover.src.width);
+
+const index = projects.findIndex((item) => item.slug === project.slug);
+const next = projects[(index + 1) % projects.length];
+const nextCover = getShots(next.slug)[0];
+
+const projectsHref = `${localePath(lang, '')}#proyectos`;
+
+const categoryLabel: Record<Project['category'], string> = {
+  production: t.projects.filters.production,
+  own: t.projects.filters.own,
+  freelance: t.projects.filters.freelance,
+  lab: t.projects.filters.lab,
+};
+
+const meta = [
+  { label: t.projects.roleLabel, value: project.role[lang] },
+  { label: t.projects.contextTitle, value: project.context[lang] },
+  { label: t.projects.yearLabel, value: project.period[lang] },
+];
+---
+
+<article class="detail">
+  <div class="container">
+    <a class="detail__back" href={projectsHref}>
+      <Icon name="arrow-left" size={15} />
+      {t.projects.backToProjects}
+    </a>
+
+    <header class="detail__head">
+      <p class="eyebrow">
+        <span class="eyebrow__dot"></span>
+        {categoryLabel[project.category]}
+        <span class="eyebrow__num">·</span>
+        <span class="eyebrow__num">{project.period[lang]}</span>
+      </p>
+      <h1 class="detail__title">{project.title}</h1>
+      <p class="detail__lead">{project.summary[lang]}</p>
+
+      {
+        project.links && project.links.length > 0 && (
+          <div class="detail__actions">
+            {project.links.map((link) => (
+              <a class="btn btn--primary" href={link.href} target="_blank" rel="noopener noreferrer">
+                <Icon name={link.kind === 'demo' ? 'sparkle' : 'external'} size={15} />
+                {link.label[lang]}
+              </a>
+            ))}
+          </div>
+        )
+      }
+    </header>
+  </div>
+
+  {
+    cover && (
+      <div class="container">
+        <figure class:list={['detail__cover', { 'detail__cover--portrait': coverIsPortrait }]}>
+          <Image
+            src={cover.src}
+            alt={cover.alt[lang]}
+            widths={[700, 1200, 1800]}
+            sizes="(max-width: 1200px) 94vw, 1180px"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
+      </div>
+    )
+  }
+
+  <div class="container">
+    <div class="detail__grid">
+      <div class="detail__main">
+        <div class="detail__prose">
+          {project.body[lang].map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+
+        <div class="detail__block">
+          <h2 class="detail__block-title">
+            <Icon name="check" size={15} />
+            {t.projects.highlights}
+          </h2>
+          <ul class="detail__highlights">
+            {
+              project.highlights[lang].map((item) => (
+                <li>
+                  <span class="detail__highlight-mark" aria-hidden="true" />
+                  <span>{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <aside class="detail__aside">
+        <dl class="detail__meta">
+          {
+            meta.map((row) => (
+              <div class="detail__meta-row">
+                <dt>{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+
+        <div class="detail__stack">
+          <p class="detail__stack-title">{t.projects.stack}</p>
+          <ul class="tags">
+            {project.stack.map((item) => (
+              <li class="tag">{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <p class="detail__note">{t.projects.privateNote}</p>
+      </aside>
+    </div>
+  </div>
+
+  {
+    behindTheFold.length > 0 && (
+      <div class="container detail__gallery">
+        <h2 class="detail__block-title">
+          <Icon name="monitor" size={15} />
+          {t.projects.gallery}
+          <span class="detail__count">{behindTheFold.length}</span>
+        </h2>
+        <Gallery shots={shots} lang={lang} skip={1} />
+      </div>
+    )
+  }
+
+  <div class="container">
+    <a class="detail__next" href={localePath(lang, `proyectos/${next.slug}`)}>
+      <span class="detail__next-label">{t.projects.nextProject}</span>
+      <span class="detail__next-body">
+        {
+          nextCover && (
+            <span class="detail__next-media">
+              <Image src={nextCover.src} alt="" widths={[240, 480]} loading="lazy" decoding="async" />
+            </span>
+          )
+        }
+        <span class="detail__next-text">
+          <span class="detail__next-title">{next.title}</span>
+          <span class="detail__next-summary">{next.summary[lang]}</span>
+        </span>
+        <span class="detail__next-arrow" aria-hidden="true">
+          <Icon name="arrow-right" size={18} />
+        </span>
+      </span>
+    </a>
+  </div>
+</article>
+
+<style>
+  .detail {
+    padding-block: clamp(6.5rem, 12vw, 9rem) 0;
+  }
+
+  /* --- Volver --- */
+  .detail__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    transition: color 0.3s var(--ease);
+  }
+
+  .detail__back:hover {
+    color: var(--gold-bright);
+  }
+
+  /* --- Encabezado --- */
+  .detail__head {
+    display: grid;
+    gap: 1.1rem;
+    max-width: 52rem;
+  }
+
+  .detail__title {
+    font-size: clamp(2.1rem, 4.6vw, 3.4rem);
+    letter-spacing: -0.018em;
+  }
+
+  .detail__lead {
+    font-size: var(--fs-lead);
+    line-height: 1.72;
+    color: var(--fg-muted);
+  }
+
+  .detail__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 0.4rem;
+  }
+
+  /* --- Portada --- */
+  .detail__cover {
+    margin: clamp(2.25rem, 5vw, 3.5rem) 0 0;
+    padding: clamp(0.75rem, 2vw, 1.5rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--bg-soft);
+  }
+
+  .detail__cover :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+  }
+
+  /* Capturas verticales (apps móviles): panel más estrecho, centrado,
+     para que la imagen no se coma la página. */
+  .detail__cover--portrait {
+    max-width: 40rem;
+    margin-inline: auto;
+  }
+
+  .detail__cover--portrait :global(img) {
+    width: auto;
+    max-width: min(100%, 21rem);
+    max-height: 68vh;
+    margin-inline: auto;
+    object-fit: contain;
+  }
+
+  /* --- Cuerpo --- */
+  .detail__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: clamp(2.25rem, 5vw, 4rem);
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  .detail__prose {
+    display: grid;
+    gap: 1.15rem;
+    font-size: 1.02rem;
+    line-height: 1.8;
+    color: var(--fg-muted);
+  }
+
+  .detail__prose :global(p:first-child) {
+    color: var(--fg);
+  }
+
+  .detail__block {
+    margin-top: clamp(2.25rem, 4vw, 3rem);
+    padding-top: clamp(1.75rem, 3vw, 2.25rem);
+    border-top: 1px solid var(--line);
+  }
+
+  .detail__block-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .detail__count {
+    padding: 0.1rem 0.45rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.66rem;
+    color: var(--fg-dim);
+  }
+
+  .detail__highlights {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .detail__highlights li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: start;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--fg-muted);
+  }
+
+  .detail__highlight-mark {
+    width: 6px;
+    height: 6px;
+    margin-top: 0.62em;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* --- Panel lateral --- */
+  .detail__aside {
+    display: grid;
+    gap: 1.5rem;
+    padding: clamp(1.35rem, 2.6vw, 1.85rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(160deg, var(--surface) 0%, rgba(17, 17, 20, 0.5) 100%);
+  }
+
+  .detail__meta {
+    display: grid;
+  }
+
+  .detail__meta-row {
+    display: grid;
+    gap: 0.25rem;
+    padding-block: 0.9rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .detail__meta-row:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .detail__meta-row dt {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  .detail__meta-row dd {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+  }
+
+  .detail__stack {
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .detail__stack-title {
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  .detail__note {
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line-soft);
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--fg-faint);
+  }
+
+  /* --- Galería --- */
+  .detail__gallery {
+    margin-top: clamp(3.5rem, 7vw, 5.5rem);
+  }
+
+  /* La línea va dentro del contenedor para que no sobresalga del contenido. */
+  .detail__gallery::before {
+    content: '';
+    display: block;
+    height: 1px;
+    margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+    background: var(--line);
+  }
+
+  /* --- Siguiente --- */
+  .detail__next {
+    display: block;
+    margin-block: clamp(3.5rem, 7vw, 5.5rem) clamp(3rem, 6vw, 4.5rem);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    transition:
+      border-color 0.45s var(--ease),
+      background-color 0.45s var(--ease);
+  }
+
+  .detail__next:hover {
+    border-color: var(--gold-line);
+    background: var(--surface-2);
+  }
+
+  .detail__next-label {
+    display: block;
+    margin-bottom: 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .detail__next-body {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+    align-items: center;
+  }
+
+  .detail__next-media {
+    display: block;
+    width: clamp(5rem, 12vw, 9rem);
+    aspect-ratio: 16 / 10;
+    padding: 0.4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg-soft);
+  }
+
+  .detail__next-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+  }
+
+  .detail__next-text {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .detail__next-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+    font-variation-settings: 'opsz' 44;
+    line-height: 1.15;
+  }
+
+  .detail__next-summary {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--fg-dim);
+    max-width: 46rem;
+  }
+
+  .detail__next-arrow {
+    display: grid;
+    place-items: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--fg-muted);
+    transition:
+      border-color 0.35s var(--ease),
+      color 0.35s var(--ease),
+      transform 0.45s var(--ease-out);
+  }
+
+  .detail__next:hover .detail__next-arrow {
+    border-color: var(--gold-line);
+    color: var(--gold);
+    transform: translateX(4px);
+  }
+
+  /* --- Adaptación --- */
+  @media (max-width: 980px) {
+    .detail__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .detail__next-body {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .detail__next-media,
+    .detail__next-arrow {
+      display: none;
+    }
+  }
+</style>

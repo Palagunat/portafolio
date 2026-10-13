@@ -1,0 +1,78 @@
+# ---------------------------------------------------------------------------
+# Publicación automática en GitHub Pages con cada push a main.
+#
+# ESTE ARCHIVO NO ES UN FLUJO ACTIVO TODAVÍA.
+# Está fuera de `.github/workflows/` a propósito: GitHub exige el permiso
+# `workflow` en el token para poder subir archivos a esa carpeta.
+#
+# Para activarlo (una sola vez, con `gh` ya instalado):
+#
+#   gh auth refresh -s workflow          # abre el navegador y pide el permiso
+#   mkdir -p .github/workflows
+#   git mv .github/deploy-workflow.yml .github/workflows/deploy.yml
+#   git commit -m "Activar publicación automática" && git push
+#
+# Si no lo activas, el sitio se sigue publicando con `npm run deploy`.
+# ---------------------------------------------------------------------------
+name: Publicar el portafolio
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Traer el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Revisar tipos
+        run: npm run check
+
+      - name: Compilar el sitio
+        run: npm run build
+        env:
+          # Déjalas vacías para publicar en GitHub Pages, o defínelas en
+          # Settings → Secrets and variables → Actions → Variables para usar
+          # un dominio propio.
+          SITE_URL: ${{ vars.SITE_URL }}
+          BASE_PATH: ${{ vars.BASE_PATH }}
+
+      - name: Preparar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Subir el resultado
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Home from '../components/Home.astro';
+import { site } from '../data/site';
+import { ui } from '../data/i18n';
+
+const t = ui.es;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  jobTitle: t.hero.role,
+  email: `mailto:${site.email}`,
+  url: Astro.site?.href,
+  sameAs: [site.github, site.clientSite],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Ibagué',
+    addressRegion: 'Tolima',
+    addressCountry: 'CO',
+  },
+  knowsLanguage: ['es', 'en'],
+  knowsAbout: [
+    'Go',
+    'Flutter',
+    'Dart',
+    'Python',
+    'Django',
+    'PostgreSQL',
+    'Kubernetes',
+    'Docker',
+    'REST APIs',
+    'Offline-first software',
+  ],
+};
+---
+
+<BaseLayout lang="es" jsonLd={jsonLd}>
+  <Home lang="es" />
+</BaseLayout>

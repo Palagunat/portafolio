@@ -1,0 +1,253 @@
+---
+import Icon from './Icon.astro';
+import ProjectCard from './ProjectCard.astro';
+import { getShots, labProjects } from '../data/projects';
+import { site, type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+import { localePath } from '../utils/url';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+/** El experimento desplegado es el que tiene el demo en vivo. */
+const withDemo = labProjects.find((project) =>
+  project.links?.some((link) => link.kind === 'demo'),
+);
+const liveHref = withDemo?.links?.find((link) => link.kind === 'demo')?.href ?? site.liveDemo;
+const liveName = withDemo?.title ?? '';
+
+const detailHref = withDemo ? localePath(lang, `proyectos/${withDemo.slug}`) : liveHref;
+---
+
+<section class="section lab" id="laboratorio" data-section="laboratorio">
+  <div class="container">
+    <header class="section-head" data-reveal>
+      <p class="eyebrow">
+        <span class="eyebrow__dot"></span>
+        <span class="eyebrow__num">03</span>
+        {t.lab.eyebrow}
+      </p>
+      <h2 class="section-head__title">{t.lab.title}</h2>
+      <p class="section-head__text">{t.lab.lead}</p>
+    </header>
+
+    <!-- --- Aviso del demo en vivo: una sola línea, discreta pero visible --- -->
+    <div class="lab-live" data-reveal>
+      <p class="lab-live__info">
+        <span class="lab-live__dot" aria-hidden="true"></span>
+        <strong>{liveName}</strong>
+        <span class="lab-live__sep" aria-hidden="true">·</span>
+        <span class="lab-live__label">{t.lab.liveLabel}</span>
+        <span class="lab-live__text">{t.lab.liveText}</span>
+      </p>
+      <div class="lab-live__actions">
+        <a class="btn btn--primary" href={liveHref} target="_blank" rel="noopener noreferrer">
+          <Icon name="external" size={15} />
+          {t.lab.liveCta}
+        </a>
+        <a class="lab-live__detail" href={detailHref}>
+          {t.projects.viewProject}
+          <Icon name="arrow-right" size={14} />
+        </a>
+      </div>
+      <p class="lab-live__note">{t.lab.liveNote}</p>
+    </div>
+
+    <!-- --- Los dos experimentos --- -->
+    <div class="lab-grid">
+      {
+        labProjects.map((project, index) => (
+          <ProjectCard project={project} shots={getShots(project.slug)} lang={lang} index={index} />
+        ))
+      }
+    </div>
+
+    <!-- --- La arquitectura compartida --- -->
+    <div class="lab-build" data-reveal>
+      <h3 class="lab-build__title">
+        <Icon name="sparkle" size={16} />
+        {t.lab.howItWorks}
+      </h3>
+      <div class="lab-build__grid">
+        {
+          t.lab.experiments.map((item, index) => (
+            <div class="lab-build__card" style={`--i:${index}`}>
+              <span class="lab-build__num">{String(index + 1).padStart(2, '0')}</span>
+              <h4>{item.title}</h4>
+              <p>{item.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- Aviso del demo --- */
+  .lab-live {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    padding: clamp(1.1rem, 2.4vw, 1.5rem) clamp(1.15rem, 2.6vw, 1.75rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .lab-live__info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.45rem 0.6rem;
+    font-size: 0.92rem;
+    color: var(--fg-muted);
+  }
+
+  .lab-live__dot {
+    width: 7px;
+    height: 7px;
+    align-self: center;
+    border-radius: 50%;
+    background: #7dc98a;
+    flex: none;
+  }
+
+  .lab-live__info strong {
+    font-weight: 600;
+    color: var(--fg);
+  }
+
+  .lab-live__sep {
+    color: var(--fg-faint);
+  }
+
+  .lab-live__label {
+    color: #9ad8a6;
+  }
+
+  .lab-live__text {
+    flex-basis: 100%;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--fg-muted);
+  }
+
+  .lab-live__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .lab-live__detail {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--fg-muted);
+    white-space: nowrap;
+    transition: color 0.3s var(--ease);
+  }
+
+  .lab-live__detail:hover {
+    color: var(--gold-bright);
+  }
+
+  .lab-live__note {
+    grid-column: 1 / -1;
+    font-size: 0.74rem;
+    color: var(--fg-faint);
+  }
+
+  /* --- Los dos experimentos --- */
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: clamp(1.1rem, 2.4vw, 1.75rem);
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  @media (min-width: 861px) {
+    .lab-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* --- Arquitectura compartida --- */
+  .lab-build {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .lab-build__title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .lab-build__title :global(.icon) {
+    color: var(--gold);
+  }
+
+  .lab-build__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: clamp(1rem, 2.2vw, 1.6rem);
+  }
+
+  .lab-build__card {
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: border-color 0.4s var(--ease);
+  }
+
+  .lab-build__card:hover {
+    border-color: var(--gold-line);
+  }
+
+  .lab-build__num {
+    display: block;
+    margin-bottom: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--gold);
+  }
+
+  .lab-build__card h4 {
+    margin-bottom: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.98rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+
+  .lab-build__card p {
+    font-size: 0.88rem;
+    line-height: 1.68;
+    color: var(--fg-muted);
+  }
+
+  @media (max-width: 760px) {
+    .lab-live {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lab-live__actions {
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+  }
+</style>

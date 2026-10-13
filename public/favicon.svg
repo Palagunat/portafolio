@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Paulo Laguna">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0dcae" />
+      <stop offset="45%" stop-color="#cfa960" />
+      <stop offset="100%" stop-color="#9a7a3a" />
+    </linearGradient>
+  </defs>
+
+  <rect width="64" height="64" rx="14" fill="#0d0d10" />
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.4" fill="none" stroke="#c9a961" stroke-opacity="0.28" stroke-width="1.5" />
+
+  <!-- Tres lingotes: aluden al oro y, de paso, a una gráfica. -->
+  <rect x="14" y="37" width="36" height="6" rx="2" fill="url(#g)" opacity="0.55" />
+  <rect x="18" y="28.5" width="28" height="6" rx="2" fill="url(#g)" opacity="0.78" />
+  <rect x="22" y="20" width="20" height="6" rx="2" fill="url(#g)" />
+</svg>

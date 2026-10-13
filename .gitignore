@@ -1,0 +1,18 @@
+# Dependencias
+node_modules/
+
+# Salida de compilación
+dist/
+.astro/
+
+# Entorno local
+.env
+.env.local
+.env.production
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

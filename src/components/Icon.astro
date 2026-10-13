@@ -1,0 +1,151 @@
+---
+/**
+ * Set de iconos en línea. Trazo fino y consistente (1.5px) para que combinen
+ * con la tipografía y no pesen visualmente.
+ */
+export type IconName =
+  | 'arrow-right'
+  | 'arrow-up'
+  | 'arrow-left'
+  | 'external'
+  | 'github'
+  | 'mail'
+  | 'phone'
+  | 'download'
+  | 'sparkle'
+  | 'check'
+  | 'globe'
+  | 'phone-device'
+  | 'monitor';
+
+interface Props {
+  name: IconName;
+  size?: number | string;
+  class?: string;
+}
+
+const { name, size = 16, class: className = '' } = Astro.props;
+---
+
+<svg
+  class={`icon ${className}`}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    name === 'arrow-right' && (
+      <>
+        <path d="M5 12h13" />
+        <path d="m12 5 7 7-7 7" />
+      </>
+    )
+  }
+  {
+    name === 'arrow-left' && (
+      <>
+        <path d="M19 12H6" />
+        <path d="m12 19-7-7 7-7" />
+      </>
+    )
+  }
+  {
+    name === 'arrow-up' && (
+      <>
+        <path d="M12 19V6" />
+        <path d="m5 13 7-7 7 7" />
+      </>
+    )
+  }
+  {
+    name === 'external' && (
+      <>
+        <path d="M15 3h6v6" />
+        <path d="M10 14 21 3" />
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+      </>
+    )
+  }
+  {
+    name === 'github' && (
+      <path
+        fill="currentColor"
+        stroke="none"
+        d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-1.05-.01-1.9-2.78.62-3.37-1.22-3.37-1.22-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.9 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.4 9.4 0 0 1 2.5-.34c.85 0 1.7.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.49A10.03 10.03 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"
+      />
+    )
+  }
+  {
+    name === 'mail' && (
+      <>
+        <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" />
+        <path d="m3 7 8.4 5.8a1 1 0 0 0 1.2 0L21 7" />
+      </>
+    )
+  }
+  {
+    name === 'phone' && (
+      <path d="M6.5 3h-2A1.5 1.5 0 0 0 3 4.5C3 13.06 10.94 21 19.5 21A1.5 1.5 0 0 0 21 19.5v-2a1.5 1.5 0 0 0-1.2-1.47l-3.1-.62a1.5 1.5 0 0 0-1.5.55l-.7.94a12.6 12.6 0 0 1-4.9-4.9l.94-.7A1.5 1.5 0 0 0 11.1 9.8l-.62-3.1A1.5 1.5 0 0 0 9 6.5Z" />
+    )
+  }
+  {
+    name === 'download' && (
+      <>
+        <path d="M12 3v11" />
+        <path d="m7.5 10 4.5 4.5 4.5-4.5" />
+        <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
+      </>
+    )
+  }
+  {
+    name === 'sparkle' && (
+      <path d="M12 3c.6 3.2 1.9 4.5 5.1 5.1-3.2.6-4.5 1.9-5.1 5.1-.6-3.2-1.9-4.5-5.1-5.1C10.1 7.5 11.4 6.2 12 3ZM18 14c.3 1.7 1 2.4 2.7 2.7-1.7.3-2.4 1-2.7 2.7-.3-1.7-1-2.4-2.7-2.7 1.7-.3 2.4-1 2.7-2.7ZM6.5 14.5c.3 1.4.8 1.9 2.2 2.2-1.4.3-1.9.8-2.2 2.2-.3-1.4-.8-1.9-2.2-2.2 1.4-.3 1.9-.8 2.2-2.2Z" />
+    )
+  }
+  {
+    name === 'check' && (
+      <>
+        <path d="m4 12.5 5 5L20 6.5" />
+      </>
+    )
+  }
+  {
+    name === 'globe' && (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18" />
+        <path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z" />
+      </>
+    )
+  }
+  {
+    name === 'phone-device' && (
+      <>
+        <rect x="7" y="2.5" width="10" height="19" rx="2.5" />
+        <path d="M11 5.5h2" />
+      </>
+    )
+  }
+  {
+    name === 'monitor' && (
+      <>
+        <rect x="2.5" y="4" width="19" height="13" rx="2" />
+        <path d="M9 21h6M12 17v4" />
+      </>
+    )
+  }
+</svg>
+
+<style>
+  .icon {
+    display: block;
+    flex: none;
+  }
+</style>

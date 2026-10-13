@@ -1,0 +1,338 @@
+---
+import Icon from './Icon.astro';
+import { site, type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+import { localePath, withBase } from '../utils/url';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+
+const home = localePath(lang, '');
+const cvHref = withBase(site.cv[lang]);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero__inner">
+    <p class="hero__status">
+      <span class="hero__pulse" aria-hidden="true"></span>
+      {t.hero.status}
+      <span class="hero__sep" aria-hidden="true">·</span>
+      <span class="hero__place">{site.location}</span>
+    </p>
+
+    <p class="hero__name">
+      <span translate="no">{site.name}</span>
+      <span class="hero__role">{t.hero.role} · {t.hero.stack}</span>
+    </p>
+
+    <h1 class="hero__title" id="hero-title">
+      {
+        t.hero.titleLines.map((line) => (
+          <span class="hero__line">{line}</span>
+        ))
+      }
+      <span class="hero__line hero__line--accent">{t.hero.titleAccent}</span>
+    </h1>
+
+    <p class="hero__lead">{t.hero.lead}</p>
+
+    <div class="hero__cta">
+      <a class="btn btn--primary btn--lg" href={cvHref}>
+        <Icon name="download" size={16} />
+        {t.hero.ctaCv}
+      </a>
+      <a class="btn btn--ghost btn--lg" href={`${home}#proyectos`}>
+        {t.hero.ctaProjects}
+        <Icon name="arrow-right" size={16} />
+      </a>
+      <a class="hero__contact" href={`${home}#contacto`}>
+        {t.hero.ctaContact}
+      </a>
+    </div>
+  </div>
+
+  <div class="container hero__stats-wrap">
+    <dl class="hero__stats">
+      {
+        t.hero.stats.map((stat, index) => (
+          <div class="hero__stat" style={`--i:${index}`}>
+            <dt class="hero__stat-value">{stat.value}</dt>
+            <dd class="hero__stat-label">{stat.label}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    padding-block: clamp(7.5rem, 16vw, 11rem) clamp(3rem, 6vw, 4.5rem);
+    overflow: hidden;
+  }
+
+  /* El contenedor conserva su ancho para que el borde izquierdo coincida
+     con el resto de secciones; se limita el ancho de cada bloque de texto. */
+  .hero__inner {
+    display: grid;
+    justify-items: start;
+    gap: 1.35rem;
+  }
+
+  /* --- Estado --- */
+  .hero__status {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    width: fit-content;
+    padding: 0.38rem 0.85rem 0.38rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.018);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-muted);
+    animation: hero-in 0.9s var(--ease-out) backwards;
+  }
+
+  .hero__pulse {
+    position: relative;
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 50%;
+    background: #7dc98a;
+  }
+
+  .hero__pulse::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1px solid rgba(125, 201, 138, 0.55);
+    animation: pulse 2.6s var(--ease) infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.7);
+      opacity: 0.9;
+    }
+    70%,
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  .hero__sep {
+    color: var(--fg-faint);
+  }
+
+  .hero__place {
+    color: var(--fg-dim);
+  }
+
+  /* --- Nombre --- */
+  .hero__name {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    animation: hero-in 0.9s var(--ease-out) 0.08s backwards;
+  }
+
+  .hero__role {
+    color: var(--fg-dim);
+  }
+
+  /* --- Titular --- */
+  .hero__title {
+    display: grid;
+    gap: 0.05em;
+    margin-block: 0.15rem 0.35rem;
+    font-size: var(--fs-display);
+    letter-spacing: -0.018em;
+    line-height: 1.08;
+  }
+
+  .hero__line {
+    display: block;
+    animation: hero-in 1s var(--ease-out) backwards;
+  }
+
+  .hero__line:nth-child(1) {
+    animation-delay: 0.14s;
+  }
+  .hero__line:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .hero__line:nth-child(3) {
+    animation-delay: 0.26s;
+  }
+  .hero__line:nth-child(4) {
+    animation-delay: 0.32s;
+  }
+
+  .hero__line--accent {
+    color: var(--gold);
+  }
+
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  /* --- Entradilla --- */
+  .hero__lead {
+    max-width: 44rem;
+    font-size: var(--fs-lead);
+    line-height: 1.7;
+    color: var(--fg-muted);
+    animation: hero-in 1s var(--ease-out) 0.38s backwards;
+  }
+
+  /* --- Llamadas a la acción --- */
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.6rem;
+    animation: hero-in 1s var(--ease-out) 0.46s backwards;
+  }
+
+  .hero__contact {
+    position: relative;
+    margin-left: 0.4rem;
+    padding-block: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--fg-muted);
+    transition: color 0.3s var(--ease);
+  }
+
+  .hero__contact::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.3rem;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.35;
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .hero__contact:hover {
+    color: var(--gold-bright);
+  }
+
+  .hero__contact:hover::after {
+    opacity: 0.8;
+  }
+
+  /* --- Cifras --- */
+  .hero__stats-wrap {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+  }
+
+  .hero__stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem clamp(1rem, 3vw, 2.5rem);
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .hero__stat {
+    position: relative;
+    display: grid;
+    gap: 0.3rem;
+    animation: hero-in 1s var(--ease-out) backwards;
+    animation-delay: calc(var(--i) * 80ms + 0.55s);
+  }
+
+  .hero__stat + .hero__stat::before {
+    content: '';
+    position: absolute;
+    left: calc(-1 * clamp(0.5rem, 1.5vw, 1.25rem));
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .hero__stat-value {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 60;
+    font-size: clamp(1.6rem, 3.4vw, 2.35rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hero__stat-label {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--fg-muted);
+    max-width: 15rem;
+  }
+
+  /* --- Adaptación --- */
+  @media (max-width: 900px) {
+    .hero__stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.75rem 1.5rem;
+    }
+
+    .hero__stat + .hero__stat::before {
+      display: none;
+    }
+
+    .hero__stat:nth-child(even) {
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--line);
+    }
+  }
+
+  @media (max-width: 520px) {
+    .hero__sep {
+      display: none;
+    }
+
+    .hero__place {
+      flex-basis: 100%;
+    }
+
+    .hero__status {
+      border-radius: var(--radius);
+    }
+
+    .hero__cta {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .hero__contact {
+      align-self: center;
+      margin-left: 0;
+    }
+  }
+</style>

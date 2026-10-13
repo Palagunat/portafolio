@@ -1,0 +1,165 @@
+---
+import Icon from './Icon.astro';
+import { type Lang } from '../data/site';
+import { ui } from '../data/i18n';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ui[lang];
+---
+
+<section class="section" id="sobre-mi" data-section="sobre-mi">
+  <div class="container">
+    <div class="about" data-reveal>
+      <div class="about__main">
+        <header class="section-head">
+          <p class="eyebrow">
+            <span class="eyebrow__dot"></span>
+            <span class="eyebrow__num">01</span>
+            {t.about.eyebrow}
+          </p>
+          <h2 class="section-head__title">{t.about.title}</h2>
+        </header>
+
+        <div class="about__prose">
+          {t.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </div>
+
+      <aside class="about__aside">
+        <div class="about__facts">
+          <h3 class="about__facts-title">{t.about.factsTitle}</h3>
+          <dl class="about__list">
+            {
+              t.about.facts.map((fact) => (
+                <div class="about__row">
+                  <dt>{fact.label}</dt>
+                  <dd>{fact.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+
+        <div class="about__focus">
+          <p class="about__focus-title">
+            <Icon name="sparkle" size={15} />
+            {t.about.focusTitle}
+          </p>
+          <p class="about__focus-text">{t.about.focus}</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    display: grid;
+    gap: clamp(2.5rem, 5vw, 4rem);
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .about__prose {
+    display: grid;
+    gap: 1.15rem;
+    max-width: 44rem;
+    color: var(--fg-muted);
+    font-size: 1.02rem;
+    line-height: 1.78;
+  }
+
+  .about__prose :global(p:first-child) {
+    color: var(--fg);
+    font-size: var(--fs-lead);
+    line-height: 1.7;
+  }
+
+  /* --- Panel lateral --- */
+  .about__aside {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .about__facts {
+    padding: 1.6rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: linear-gradient(160deg, var(--surface) 0%, rgba(17, 17, 20, 0.55) 100%);
+  }
+
+  .about__facts-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.1rem;
+  }
+
+  .about__list {
+    display: grid;
+  }
+
+  .about__row {
+    display: grid;
+    gap: 0.2rem;
+    padding-block: 0.85rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .about__row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .about__row dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+
+  .about__row dd {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--fg);
+  }
+
+  .about__focus {
+    padding: 1.4rem 1.6rem;
+    border: 1px solid var(--gold-line);
+    border-radius: var(--radius);
+    background: var(--gold-wash);
+  }
+
+  .about__focus-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .about__focus-text {
+    font-size: 0.92rem;
+    line-height: 1.65;
+    color: var(--fg-muted);
+  }
+
+  @media (max-width: 940px) {
+    .about {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

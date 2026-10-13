@@ -1,171 +1,149 @@
-# Portafolio — Andrés Laguna
+# Portafolio — Paulo Andrés Laguna Tovar
 
-Desarrollador de software · Flutter (escritorio y móvil) · Go · Firebase
+Sitio de portafolio para búsqueda de empleo. Construido con **Astro**, en
+español e inglés, y publicado como sitio estático.
 
-Capturas y descripciones de aplicaciones que desarrollé. El código fuente es
-propiedad de los clientes o es privado, por lo que aquí se publican pantallas y
-notas técnicas en lugar de código.
+**En línea:** https://palagunat.github.io/portafolio
 
-## Infinity — Sistema de gestión (escritorio)
+---
 
-Aplicación de escritorio en Flutter para la operación de una comercializadora
-de metales preciosos: registro de compras, bodega, lingoteo, contabilidad,
-moviliario, vehículos, rutas, despachos, sucursales, colaboradores, usuarios y
-reportes.
+## Qué hay aquí
 
-**Stack:** Flutter · GetX · Syncfusion Charts y fl_chart · impresión de PDF ·
-cámara para captura de documentos · API REST · sesión con número de documento.
+| Carpeta | Qué es |
+|---|---|
+| `src/data/` | **Todo el contenido editable**: datos personales, proyectos, experiencia, textos en los dos idiomas. |
+| `src/components/` | Las secciones del sitio (hero, proyectos, laboratorio, etc.). |
+| `src/layouts/` | El armazón HTML: metadatos, SEO, navegación y pie. |
+| `src/pages/` | Las rutas: `/` (español) y `/en/` (inglés), más el detalle de cada proyecto. |
+| `src/styles/global.css` | El sistema de diseño: colores, tipografía, espaciados, animaciones. |
+| `src/utils/url.ts` | Ayudas para construir rutas (respeta el `base` y el idioma). |
+| `capturas/` | Las capturas de pantalla. **Es la única copia**: la usan el sitio y este README. |
+| `public/` | Archivos servidos tal cual: CV en PDF, favicon, imagen para redes sociales. |
 
-<p>
-  <img src="capturas/infinity-escritorio/02-menu.png" width="620" alt="Panel principal">
-</p>
+---
 
-<p>
-  <img src="capturas/infinity-escritorio/01-login.png" width="380" alt="Inicio de sesión">
-  <img src="capturas/infinity-escritorio/03-compra.png" width="380" alt="Registro de compra">
-</p>
+## Cómo editar el contenido
 
-<p>
-  <img src="capturas/infinity-escritorio/04-lingoteo.png" width="380" alt="Registro de lingotes">
-  <img src="capturas/infinity-escritorio/05-contabilidad.png" width="380" alt="Contabilidad">
-</p>
+Casi todo se cambia en `src/data/`, sin tocar los componentes.
 
-## GailagGold v1 — Primera versión (Angular + Electron)
+### `src/data/site.ts` — tus datos
+Correo, ciudad, GitHub, LinkedIn, enlaces al CV y al demo en vivo.
+Si dejas `linkedin` vacío, el enlace simplemente no se dibuja.
 
-Primera versión del sistema de gestión, construida con Angular y Electron:
-compras, bodega, mineros, negocios, moviliario, lingoteo, ingresos y egresos
-con analítica y cortes, informes y nómina. Años después se reescribió por
-completo en Flutter (la versión de escritorio de arriba).
+### `src/data/projects.ts` — los proyectos
+Cada proyecto es un objeto con su resumen, sus párrafos, sus puntos clave y su
+stack. La categoría (`production`, `own`, `freelance` o `lab`) decide dónde se
+dibuja: en la grilla principal o en el laboratorio de IA, que tiene dos
+experimentos independientes con servidor propio cada uno. Abajo está `shots`, el
+catálogo de capturas: la primera de cada lista se usa como portada.
 
-**Stack:** Angular · Electron · Angular Material · gráficas (ngx-charts) ·
-impresión de PDF · firma digital y lector de huella (hardware).
+Para agregar una captura:
+1. Copia el PNG a `capturas/<proyecto>/`.
+2. Añádela a `shots` con su texto alternativo (obligatorio) y su pie de foto.
+3. Si quieres agruparla en la galería, pásale uno de los grupos de `GROUP`.
 
-<p>
-  <img src="capturas/gailaggold-v1/02-analisis-movimientos.png" width="620" alt="Análisis de movimientos">
-</p>
+Si la ruta de una imagen no existe, la compilación falla con un mensaje claro
+en vez de publicar un hueco.
 
-<p>
-  <img src="capturas/gailaggold-v1/01-login.png" width="380" alt="Inicio de sesión">
-  <img src="capturas/gailaggold-v1/03-registros.png" width="380" alt="Registros">
-</p>
+### `src/data/experience.ts` — la trayectoria
+Los puestos, en el orden en que quieres que aparezcan. El que tenga
+`featured: true` se dibuja con el tratamiento dorado y la etiqueta
+«Experiencia principal».
 
-## InfinityApp — App móvil
+### `src/data/i18n.ts` — los textos de la interfaz
+Todo lo que se lee en pantalla: títulos de sección, botones, navegación.
+El tipo del español define la forma del inglés, así que si agregas una frase en
+uno y te olvidas del otro, `npm run check` te avisa.
 
-Aplicación móvil de precios y cálculo de compra: precio por gramo del oro
-calculado al instante a partir del mercado, dólar de compra, estado de
-apertura/cierre del mercado, calculadora de compra (ley, gramos, porcentaje) y
-lector de QR.
+---
 
-**Stack:** Flutter (GetX) · fl_chart · Firebase (mensajería) · QR ·
-notificaciones locales y servicio en segundo plano.
+## Trabajar en local
 
-<p>
-  <img src="capturas/infinityapp/01-precios.png" width="225" alt="Precio por gramo y estado del mercado">
-  <img src="capturas/infinityapp/02-calculadora.png" width="225" alt="Calculadora de compra">
-</p>
+```bash
+npm install
+npm run dev      # http://localhost:4321/portafolio
+```
 
-## PriceLock — App móvil + API
+Otros comandos:
 
-Aplicación móvil para operadores: precio por gramo en vivo por metal (oro,
-plata, platino, paladio y rodio), anuncios de compra/venta, disponibilidad
-horaria, usuarios y grupos de precios, y registro de compras con cálculo
-automático del total a partir de ley, finos y gramos brutos.
+```bash
+npm run build    # compila a dist/
+npm run preview  # sirve dist/ para revisarlo
+npm run check    # revisa tipos y errores en los .astro
+```
 
-El backend es propio, escrito en Go: API REST, autenticación, tareas
-programadas (actualización de precios y moderación) y notificaciones push.
+---
 
-**Stack:** Flutter (GetX, fl_chart) · Firebase (mensajería y notificaciones) ·
-Go (Echo, GORM/SQLite, JWT, cron).
+## Publicar
 
-<p>
-  <img src="capturas/pricelock/01-precios.png" width="225" alt="Precio por gramo en vivo">
-  <img src="capturas/pricelock/02-metales.png" width="225" alt="Selección de metal">
-  <img src="capturas/pricelock/03-menu.png" width="225" alt="Menú">
-</p>
+El sitio se publica en la rama `gh-pages`, que GitHub Pages sirve directamente.
 
-<p>
-  <img src="capturas/pricelock/04-anuncios.png" width="225" alt="Anuncios">
-  <img src="capturas/pricelock/05-compra.png" width="225" alt="Registro de compra">
-  <img src="capturas/pricelock/06-disponibilidad.png" width="225" alt="Disponibilidad horaria">
-</p>
+```bash
+npm run deploy     # compila y sube dist/ a la rama gh-pages
+```
 
-## Nian Admin — Panel de administración (escritorio)
+Eso es todo. Cada vez que cambies algo, `npm run deploy` y en un minuto está en
+línea. Queda en `https://palagunat.github.io/portafolio`.
 
-Panel de administración desarrollado como propuesta para Nian Capital:
-ventas, compras, clientes, inventario, contabilidad (ingresos y gastos, con
-informes diario y general), producción de lingotes (lotes con certificado de
-peso y pureza, regalías e imágenes), reasignaciones, sucursales y usuarios con
-permisos por grupos, con exportación e importación de datos.
+### Publicación automática (opcional)
 
-**Stack:** Flutter (escritorio) · trina_grid · gráficas · informes en PDF y
-Excel.
+El repositorio incluye un flujo de GitHub Actions listo en
+`.github/deploy-workflow.yml`, pero está **fuera** de `.github/workflows/` a
+propósito: GitHub exige el permiso `workflow` en el token para poder subir
+archivos a esa carpeta. Para activarlo, una sola vez:
 
-<p>
-  <img src="capturas/nian-admin/02-informe-general.png" width="620" alt="Informe general">
-</p>
+```bash
+gh auth refresh -s workflow
+mkdir -p .github/workflows
+git mv .github/deploy-workflow.yml .github/workflows/deploy.yml
+git commit -m "Activar publicación automática" && git push
+```
 
-<p>
-  <img src="capturas/nian-admin/01-informe-diario.png" width="380" alt="Informe diario">
-  <img src="capturas/nian-admin/03-lote.png" width="380" alt="Producción de lotes">
-</p>
+Y después, en el repositorio: **Settings → Pages → Build and deployment →
+Source: GitHub Actions**. Desde ahí, cada push a `main` publica solo.
 
-<p>
-  <img src="capturas/nian-admin/04-municipios.png" width="380" alt="Datos maestros">
-  <img src="capturas/nian-admin/05-usuarios-grupos.png" width="380" alt="Usuarios y permisos">
-</p>
+### Dominio propio
 
-## Asistente IA — Experimento (ERP + IA)
+Por ejemplo `https://portafolio.anmaucol.org`.
 
-Experimento propio: consola de gestión con asistente de IA integrado. Servidor
-modular en Go con aislamiento por empresa (Row Level Security de PostgreSQL),
-cliente Flutter (escritorio/web/móvil) y un orquestador que consulta y registra
-datos con tarjetas de confirmación antes de escribir.
+1. En el repositorio: **Settings → Secrets and variables → Actions → Variables**
+   y crea dos variables:
+   - `SITE_URL` = `https://portafolio.anmaucol.org`
+   - `BASE_PATH` = `/`
+2. En el DNS, un registro `CNAME` que apunte `portafolio` a `palagunat.github.io`.
+3. Escribe el dominio en **Settings → Pages → Custom domain** (esto crea el
+   archivo `CNAME` automáticamente para que el dominio no se pierda).
 
-**Stack:** Go (pgx, RLS, JWT, River) · Flutter (GetX) · Postgres · IA con
-herramientas por módulo.
+Para compilar con dominio propio sin usar GitHub Actions:
 
-<p>
-  <img src="capturas/asistente-ia/02-tablero.png" width="620" alt="Tablero con KPIs y alertas">
-</p>
+```bash
+SITE_URL=https://portafolio.anmaucol.org BASE_PATH=/ npm run build
+```
 
-<p>
-  <img src="capturas/asistente-ia/01-login.png" width="380" alt="Inicio de sesión">
-  <img src="capturas/asistente-ia/03-punto-de-venta.png" width="380" alt="Punto de venta con carrito">
-</p>
+El `canonical`, el sitemap y `robots.txt` se generan solos con el dominio
+correcto, así que no hay que editar ningún archivo.
 
-<p>
-  <img src="capturas/asistente-ia/04-asistente-ventas.png" width="380" alt="Asistente: ventas del día">
-  <img src="capturas/asistente-ia/05-asistente-inventario.png" width="380" alt="Asistente: inventario crítico">
-</p>
+---
 
-<p>
-  <img src="capturas/asistente-ia/06-asistente-orden.png" width="620" alt="Asistente: orden de compra con confirmación">
-</p>
+## Decisiones que conviene conocer
 
-## SysCafé IA — Experimento (escritorio MDI + IA)
+- **Sin rastreadores ni cookies.** El sitio no carga scripts de terceros; las
+  tipografías (Fraunces, Inter y JetBrains Mono) se sirven desde el propio
+  dominio, no desde Google Fonts.
+- **Oscuro y dorado.** El sitio usa la misma paleta que las capturas, para que
+  se lean como una sola obra.
+- **Las capturas se optimizan al compilar.** Los PNG originales de `capturas/`
+  se convierten a WebP en varios tamaños. Nunca se publican los originales.
+- **El CV descargable son los PDF que ya usas** (`public/cv/`). Son los mismos
+  que envías a los reclutadores, así que el sitio y las postulaciones siempre
+  dicen lo mismo. Si actualizas un CV, reemplaza el PDF en esa carpeta.
+- **Los idiomas son simétricos.** El español vive en `/` y el inglés en `/en/`.
+  El selector calcula la ruta equivalente solo.
 
-Experimento propio: reproducción moderna de un sistema de gestión de escritorio
-(ventanas MDI, catálogos y comprobantes) con cliente Flutter, servidor Go y un
-asistente que explica procesos, consulta datos y abre ventanas por sí solo.
+---
 
-**Stack:** Flutter (escritorio) · Go · Postgres · asistente IA.
+## Aviso legal
 
-<p>
-  <img src="capturas/syscafe-ia/02-escritorio.png" width="620" alt="Escritorio con tablero y pendientes">
-</p>
-
-<p>
-  <img src="capturas/syscafe-ia/01-login.png" width="380" alt="Inicio de sesión">
-  <img src="capturas/syscafe-ia/03-factura.png" width="380" alt="Factura de venta (MDI)">
-</p>
-
-<p>
-  <img src="capturas/syscafe-ia/04-asistente.png" width="380" alt="Asistente: consulta de clientes">
-  <img src="capturas/syscafe-ia/05-terceros.png" width="380" alt="Asistente: ventana de terceros abierta">
-</p>
-
-## Notas
-
-- Las capturas incluyen datos de prueba de las aplicaciones.
-- Capturas publicadas con fines de portafolio; las marcas, el código y los
-  datos pertenecen a sus respectivos propietarios.
+Las capturas se publican con fines de portafolio y contienen datos de prueba.
+Las marcas, el código fuente y los datos de cada aplicación pertenecen a sus
+respectivos propietarios. El código de los proyectos **no** se publica.
